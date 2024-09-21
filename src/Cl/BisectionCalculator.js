@@ -1,47 +1,45 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button, Container, Form, Table } from "react-bootstrap";
 import { evaluate } from 'mathjs';
+import GraphComponent from './GraphComponent';
 
 import TextForm from "../components/text_form";
 import styled from 'styled-components';
 import ButtonFormat from "../components/button_form";
+
 const FormCon = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;  
     justify-content: center;  
-   
-
 `;
 
-const FormInput =styled.div`
+const FormInput = styled.div`
  display: flex;
  gap: 2vh; 
 `;
 
-const FormButton =styled.div`
+const FormButton = styled.div`
 margin-top:3vh;
  display: flex;
     flex-direction: column;
     align-items: center;  
     justify-content: center;
 `;
-const FormAsn =styled.div`
+
+const FormAsn = styled.div`
  display: flex;
  margin-top:2vh;
  justify-content: center;
  align-items: center;  
 font-size: 3vh;
-   
 `;
-const FormTable =styled.div`
-margin:40vh 0 0 65vh ;
 
-
+const FormTable = styled.div`
+margin:40vh 0 0 65vh;
 font-size: 2vh;
- 
-  
 `;
+
 const BisectionCalculator = () => {
     const [data, setData] = useState([]);
     const [X, setX] = useState(0);
@@ -52,7 +50,7 @@ const BisectionCalculator = () => {
     const error = (xold, xnew) => Math.abs((xnew - xold) / xnew) * 100;
 
     const Calbisection = (xl, xr) => {
-        let xm, fXm, fXr, ea = 100; // กำหนดค่าเริ่มต้น ea
+        let xm, fXm, fXr, ea = 100;
         let iter = 0;
         const MAX = 50;
         const e = 0.00001;
@@ -65,13 +63,14 @@ const BisectionCalculator = () => {
             fXr = evaluate(Equation, scopeXr);
             fXm = evaluate(Equation, scopeXm);
 
-            ea = error(xr, xm); // คำนวณค่า ea
+            ea = error(xr, xm);
             iter++;
-            results.push({ iteration: iter, Xl: xl, Xm: xm, Xr: xr }); // เก็บคำตอบ
+            results.push({ iteration: iter, Xl: xl, Xm: xm, Xr: xr }); 
+
             if (fXm * fXr > 0) {
-                xr = xm; // เปลี่ยน xr
+                xr = xm;
             } else {
-                xl = xm; // เปลี่ยน xl
+                xl = xm;
             }
         } while (ea > e && iter < MAX);
 
@@ -128,63 +127,40 @@ const BisectionCalculator = () => {
         <Container>
             <Form>
                 <Form.Group className="mb-3">
-                    <FormCon >     
-
-                         <TextForm
-                        placeholderText="Input  function"
-                        value={Equation}
-                        onValueChange={inputEquation}
-                    />
-                    
+                    <FormCon>
+                        <TextForm
+                            placeholderText="Input function"
+                            value={Equation}
+                            onValueChange={inputEquation}
+                        />
                     </FormCon>
                     <FormInput>
-
                         <TextForm
-                        placeholderText="Input XL"
-                        value={XL}
-                        onValueChange={inputXL}
-                    />
-                    <TextForm
-                        placeholderText="Input XR"
-                        value={XR}
-                        onValueChange={inputXR}
-                    />
+                            placeholderText="Input XL"
+                            value={XL}
+                            onValueChange={inputXL}
+                        />
+                        <TextForm
+                            placeholderText="Input XR"
+                            value={XR}
+                            onValueChange={inputXR}
+                        />
                     </FormInput>
                     <FormButton>
-                    <ButtonFormat text='Calculate' onClick={calculateRoot} variant="dark"/>
-               
-                </FormButton>
+                        <ButtonFormat text='Calculate' onClick={calculateRoot} variant="dark" />
+                    </FormButton>
 
-                <FormAsn>
-               Answer = {X.toPrecision(7)}
-                
-            </FormAsn>
-            
-            
+                    <FormAsn>
+                        Answer = {X.toPrecision(7)}
+                    </FormAsn>
                 </Form.Group>
                 <FormTable>
-                     <Container>
-                    {renderTable()}
-                </Container>
+                    <Container>
+                        {renderTable()}
+                        <GraphComponent data={data} /> {/* Render the graph here */}
+                    </Container>
                 </FormTable>
-               
-               
-                 
-               
-                   
-                
-                
-                
-                
-                    
-                 
-                
-                
             </Form>
-           
-            
-           
-            
         </Container>
     );
 };

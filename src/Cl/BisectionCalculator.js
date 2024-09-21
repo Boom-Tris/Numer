@@ -6,6 +6,8 @@ import GraphComponent from './GraphComponent';
 import TextForm from "../components/text_form";
 import styled from 'styled-components';
 import ButtonFormat from "../components/button_form";
+//อาเรย์ที่เก็บคำตอบจากแต่ละรอบ
+//X: ค่ารากที่เจอ
 
 const FormCon = styled.div`
     display: flex;
@@ -39,7 +41,7 @@ const FormTable = styled.div`
 margin:40vh 0 0 65vh;
 font-size: 2vh;
 `;
-
+// กำหนดค่าเริ่มต้น
 const BisectionCalculator = () => {
     const [data, setData] = useState([]);
     const [X, setX] = useState(0);
@@ -48,7 +50,7 @@ const BisectionCalculator = () => {
     const [XR, setXR] = useState("");
 
     const error = (xold, xnew) => Math.abs((xnew - xold) / xnew) * 100;
-
+//การคำนวณBisection 
     const Calbisection = (xl, xr) => {
         let xm, fXm, fXr, ea = 100;
         let iter = 0;
@@ -77,7 +79,7 @@ const BisectionCalculator = () => {
         setX(xm);
         setData(results);
     };
-
+//อัปเดตสถานะเมื่อผู้ใช้input 
     const inputEquation = (event) => {
         setEquation(event.target.value);
     };
@@ -95,7 +97,7 @@ const BisectionCalculator = () => {
         const xrnum = parseFloat(XR);
         Calbisection(xlnum, xrnum);
     };
-
+// แสดงตารางคำตอบ
     const renderTable = () => {
         return (
             <Container>
@@ -151,13 +153,13 @@ const BisectionCalculator = () => {
                     </FormButton>
 
                     <FormAsn>
-                        Answer = {X.toPrecision(7)}
+                        Answer = {X.toPrecision(7)} 
                     </FormAsn>
                 </Form.Group>
                 <FormTable>
                     <Container>
                         {renderTable()}
-                        <GraphComponent data={data} /> {/* Render the graph here */}
+                        <GraphComponent data={data} /> {}
                     </Container>
                 </FormTable>
             </Form>

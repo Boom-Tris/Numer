@@ -1,6 +1,14 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-
+//LineChart: กราฟเส้น
+//Line: เส้นในกราฟ
+//XAxis และ YAxis: แกน X และ Y 
+///CartesianGrid: แสดงGrid ในกราฟ
+//Tooltip: แสดงข้อมูลตอนเอาเมาส์ไปชี้
+//Legend: อธิบายเส้นในกราฟ
+//ResponsiveContainer: ปรับขนาดตามขนาดของคอมโพเนนต์
+//แกน X แสดงค่าจาก dataKey="iteration"
+//type: ประเภทเส้น monotone 
 const GraphComponent = ({ data }) => {
     return (
         <div className='row m-2'>
@@ -16,7 +24,7 @@ const GraphComponent = ({ data }) => {
                         }}
                     >
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="iteration" />
+                        <XAxis dataKey="iteration" />  
                         <YAxis />
                         <Tooltip />
                         <Legend />

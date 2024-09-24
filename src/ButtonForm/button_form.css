@@ -1,0 +1,36 @@
+.format-button {
+   
+        
+    height: 6vh;
+    width: 50%;
+    font-size: 3vh;
+    border-radius: 1.5vh;
+    background-color: #604A45;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border 0.3s;
+}
+
+.format-button:hover {
+    background-color: white;
+    border: 1px solid black;
+    color: #604A45;
+
+
+
+}
+@media screen and (max-width: 600px) {
+
+    .format-button  {
+        height: 5vh;
+        font-size: 2vh;
+        margin-top: 3vh;
+    }
+
+    .format-button  {
+        bottom: 1vh;
+        font-size: 2vh;
+    }
+}
+

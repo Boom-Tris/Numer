@@ -1,26 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Form, Table } from "react-bootstrap";
-import { evaluate } from 'mathjs';
+import { evaluate, parse } from 'mathjs'; // ใช้ parse สำหรับแปลงเป็น LaTeX
 import ButtonFormat from "../ButtonForm/button_form";
 import TextForm from "../ButtonForm/text_form";
 import CustomLineChart from "../GrapForm/CustomLineChart"; // เปลี่ยนเส้นทางให้ถูกต้อง
 import styled from 'styled-components';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import { IconButton } from "@mui/material";
+import 'katex/dist/katex.min.css';
+import { BlockMath, InlineMath } from 'react-katex';
 
 // Styled components
+const Inline_Math = styled.div`
+    font-size: 5vh; 
+    background-color: #f9f9f9; 
+    border-radius: 10px; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+    padding: 20px; 
+    height: 100%;
+`;
+
 const ColorIcon = {
     color: 'white',
     fontSize: 40 
 };
 
 const Restart = styled.button`
-  cursor: pointer;
-  background-color: ${({ isClicked }) => (isClicked ? '#C96868' : '#FF8A8A')};
-  border: none;
-  border-radius: 1.5vh;
-  height: 6vh;
-  width: 20%;
+    cursor: pointer;
+    background-color: ${({ $isClicked }) => ($isClicked ? '#C96868' : '#FF8A8A')};
+    border: none;
+    border-radius: 1.5vh;
+    height: 6vh;
+    width: 20%;
 `;
 
 const StyledTable = styled(Table)`
@@ -43,7 +53,8 @@ const FormCon = styled.div`
 
 const FormInput = styled.div`
     display: flex;
-    gap: 2vh; 
+    align-items: center;  
+    justify-content: center;  
 `;
 
 const FormButton = styled.div`
@@ -76,9 +87,26 @@ const OnePointIterationCalculator = () => {
     const [data, setData] = useState([]);
     const [X, setX] = useState(0);
     const [Equation, setEquation] = useState("x - (x^4 - 13)/(4*x^3)"); // Rearranged function
+    const [latexEquation, setLatexEquation] = useState(""); // เก็บสมการ LaTeX
     const [X0, setX0] = useState(""); // Initial guess
+    const [errorTolerance, setErrorTolerance] = useState(0.00001);
     const [errorMessage, setErrorMessage] = useState("");
     const [buttonClicked, setButtonClicked] = useState(false);
+
+    // ฟังก์ชันสำหรับแปลงสมการเป็น LaTeX
+    const convertToLatex = (equation) => {
+        try {
+            const node = parse(equation); // ใช้ mathjs เพื่อ parse สมการ
+            return node.toTex(); // แปลงเป็นรูปแบบ LaTeX
+        } catch (error) {
+            return equation; // ถ้าแปลงไม่สำเร็จ ให้แสดงสมการดั้งเดิม
+        }
+    };
+
+    // เมื่อ Equation เปลี่ยน, ทำการแปลงสมการเป็น LaTeX
+    useEffect(() => {
+        setLatexEquation(convertToLatex(Equation));
+    }, [Equation]);
 
     const error = (xold, xnew) => Math.abs((xnew - xold) / xnew) * 100;
 
@@ -87,7 +115,7 @@ const OnePointIterationCalculator = () => {
         let ea = 100;
         let iter = 0;
         const MAX = 50;
-        const e = 0.00001;
+        const e = parseFloat(errorTolerance);
         const results = [];
 
         do {
@@ -100,20 +128,24 @@ const OnePointIterationCalculator = () => {
 
         setX(xNew);
         setData(results);
+        console.log(xNew);
+        console.log(results);
     };
 
     const isValidNumber = (value) => /^-?\d+(\.\d+)?$/.test(value);
 
     const calculateRoot = () => {
         setErrorMessage("");
-
         const x0num = parseFloat(X0);
 
         if (isNaN(x0num)) {
+            setErrorMessage("กรุณาใส่ค่า X0.");
+            return;
+        }
+        if (!isValidNumber(x0num)) {
             setErrorMessage("กรุณาใส่ตัวเลขที่ถูกต้องสำหรับ X0.");
             return;
         }
-
         calculateOnePointIteration(x0num);
     };
 
@@ -125,8 +157,10 @@ const OnePointIterationCalculator = () => {
         setData([]);
         setX(0);
         setEquation("x - (x^4 - 13)/(4*x^3)"); // Reset to default equation
+        setLatexEquation(convertToLatex("x - (x^4 - 13)/(4*x^3)")); // Reset LaTeX
         setX0("");
         setErrorMessage("");
+        setErrorTolerance(0.00001); 
         setButtonClicked(true);
         setTimeout(() => setButtonClicked(false), 200);
     };
@@ -157,6 +191,10 @@ const OnePointIterationCalculator = () => {
             <Form>
                 <Form.Group className="mb-3">
                     <FormCon>
+                        <Inline_Math>
+                            {/* แสดงผลสมการในรูปแบบ LaTeX */}
+                            <InlineMath math={latexEquation} />
+                        </Inline_Math>
                         <TextForm
                             placeholderText="Input function (in terms of x)"
                             value={Equation}
@@ -177,7 +215,7 @@ const OnePointIterationCalculator = () => {
                         </Restart>
                     </FormButton>
                     <FormAsn>
-                        Answer = {X.toFixed(6)}
+                        <BlockMath math={`X = ${X.toPrecision(7)}`} />
                     </FormAsn>
                     {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
                     <FormTable>

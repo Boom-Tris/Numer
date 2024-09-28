@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Form, Table } from "react-bootstrap";
-import { evaluate } from 'mathjs';
+import { evaluate ,parse } from 'mathjs';
 import ButtonFormat from "../ButtonForm/button_form";
 import TextForm from "../ButtonForm/text_form";
 import GraphComponent from "../GrapForm/GraphComponent";
@@ -90,7 +90,20 @@ const BisectionCalculator = () => {
     const [errorTolerance, setErrorTolerance] = useState(0.00001);
     const [errorMessage, setErrorMessage] = useState("");
     const [buttonClicked, setButtonClicked] = useState(false);
+    const [latexEquation, setLatexEquation] = useState(""); 
+    const convertToLatex = (equation) => {
+        try {
+            const node = parse(equation); // ใช้ mathjs เพื่อ parse สมการ
+            return node.toTex(); // แปลงเป็นรูปแบบ LaTeX
+        } catch (error) {
+            return equation; // ถ้าแปลงไม่สำเร็จ ให้แสดงสมการดั้งเดิม
+        }
+    };
 
+    // เมื่อ Equation เปลี่ยน, ทำการแปลงสมการเป็น LaTeX
+    useEffect(() => {
+        setLatexEquation(convertToLatex(Equation));
+    }, [Equation]);
     const error = (xold, xnew) => Math.abs((xnew - xold) / xnew) * 100;
     const isValidNumber = (value) => /^-?\d+(\.\d+)?$/.test(value);
     const calculateBisection = (xl, xr) => {
@@ -117,7 +130,9 @@ const BisectionCalculator = () => {
         } while (ea > e && iter < MAX);
 
         setX(xm);
+        console.log(xm);
         setData(results);
+        console.log(results);
     };
 
     const calculateRoot = () => {
@@ -198,7 +213,7 @@ const BisectionCalculator = () => {
                 <Form.Group className="mb-3">
                 <FormAsn>
                     <Inline_Math>
-                         <InlineMath math={Equation} /> 
+                    <InlineMath math={latexEquation} />
                     </Inline_Math>
                        
                        

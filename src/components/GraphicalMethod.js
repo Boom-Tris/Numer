@@ -64,18 +64,18 @@ const GraphicalCalculator = () => {
             let points = [];
             for (let x = -10; x <= 10; x += 0.1) {
                 const y = evaluate(Equation, { x });
-                points.push({ iteration: x, Xm: y }); // Use iteration for x-axis and Xm for y-axis
+                points.push({ iteration: x, Xm: y }); 
 
-                // Check if y is close to 0
+               
                 if (Math.abs(y) < 0.01) {
-                    break; // Stop if y is close to 0
+                    break; 
                 }
             }
             setGraphData(points);
-            setErrorMessage(""); // Reset error message
+            setErrorMessage(""); 
         } catch (error) {
             setErrorMessage(error.message || "Invalid function. Please check your input.");
-            setGraphData([]); // Clear graph data on error
+            setGraphData([]); 
         }
     };
 

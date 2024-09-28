@@ -108,6 +108,8 @@ const NewtonRaphsonCalculator = () => {
 
         setX(xNew);
         setData(results);
+        console.log(xNew);
+        console.log(results);
     };
 
     const isValidNumber = (value) => /^-?\d+(\.\d+)?$/.test(value);
@@ -132,8 +134,8 @@ const NewtonRaphsonCalculator = () => {
     const resetFields = () => {
         setData([]);
         setX(0);
-        setEquation("x^4 - 13"); // Reset to default equation
-        setDerivative("4*x^3"); // Reset to default derivative
+        setEquation("x^4 - 13"); 
+        setDerivative("4*x^3"); 
         setX0("");
         setErrorMessage("");
         setButtonClicked(true);

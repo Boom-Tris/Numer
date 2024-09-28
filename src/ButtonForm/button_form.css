@@ -5,7 +5,7 @@
     width: 50%;
     font-size: 3vh;
     border-radius: 1.5vh;
-    background-color: #604A45;
+    background-color: #3A6D8C;
     color: white;
     border: none;
     cursor: pointer;
@@ -14,8 +14,8 @@
 
 .format-button:hover {
     background-color: white;
-    border: 1px solid black;
-    color: #604A45;
+    border: 1px solid #3A6D8C;
+    color: #3A6D8C;
 
 
 

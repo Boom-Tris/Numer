@@ -120,7 +120,7 @@ const BisectionCalculator = () => {
 
             ea = error(xr, xm);
             iter++;
-            results.push({ iteration: iter, Xl: xl, Xm: xm, Xr: xr });
+            results.push({ iteration: iter, Xl: xl, Xm: xm, Xr: xr, Error: ea }); 
 
             if (fXm * fXr > 0) {
                 xr = xm;
@@ -133,6 +133,7 @@ const BisectionCalculator = () => {
         console.log(xm);
         setData(results);
         console.log(results);
+        
     };
 
     const calculateRoot = () => {
@@ -191,6 +192,7 @@ const BisectionCalculator = () => {
                         <th width="30%">XL</th>
                         <th width="30%">XM</th>
                         <th width="30%">XR</th>
+                        <th width="30%">Error (%)</th> 
                     </tr>
                 </thead>
                 <tbody>
@@ -200,6 +202,7 @@ const BisectionCalculator = () => {
                             <td>{element.Xl.toFixed(6)}</td>
                             <td>{element.Xm.toFixed(6)}</td>
                             <td>{element.Xr.toFixed(6)}</td>
+                            <td>{element.Error.toFixed(5)}%</td>
                         </TableRow>
                     ))}
                 </tbody>
@@ -258,6 +261,7 @@ const BisectionCalculator = () => {
                         {renderTable()}
                     </FormTable>
                     <GraphComponent data={data} />
+                 
                 </Form.Group>
             </Form>
         </Container>

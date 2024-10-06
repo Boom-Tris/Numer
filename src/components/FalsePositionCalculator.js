@@ -108,26 +108,30 @@ const FalsePositionCalculator = () => {
         setLatexEquation(convertToLatex(Equation));
     }, [Equation]);
 
-    const error = (xold, xnew) => Math.abs((xnew - xold) / xnew) * 100;
     
+    const error = (xold, xnew) => Math.abs((xnew - xold) / xnew) * 100;
     const calculateFalsePosition = (xl, xr) => {
         let xm, fXm, fXl, fXr, ea = 100;
         let iter = 0;
         const MAX = 50;
         const e = parseFloat(errorTolerance);
         const results = [];
-
+    
         fXl = evaluate(Equation, { x: xl });
         fXr = evaluate(Equation, { x: xr });
-
+    
         do {
             xm = xr - (fXr * (xl - xr)) / (fXl - fXr);
             fXm = evaluate(Equation, { x: xm });
-
-            ea = error(xr, xm);
+    
+            // คำนวณความผิดพลาด
+            if (iter > 0) { // เพื่อหลีกเลี่ยงการแบ่งด้วย 0
+                ea = error(results[iter - 1].Xm, xm);
+            }
+    
             iter++;
-            results.push({ iteration: iter, Xl: xl, Xm: xm, Xr: xr });
-
+            results.push({ iteration: iter, Xl: xl, Xm: xm, Xr: xr, Error: ea });
+    
             if (fXm * fXr < 0) {
                 xl = xm;
                 fXl = fXm;
@@ -136,7 +140,7 @@ const FalsePositionCalculator = () => {
                 fXr = fXm;
             }
         } while (ea > e && iter < MAX);
-
+    
         setX(xm);
         setData(results);
         console.log(xm);
@@ -203,6 +207,7 @@ const FalsePositionCalculator = () => {
                         <th width="30%">XL</th>
                         <th width="30%">XM</th>
                         <th width="30%">XR</th>
+                        <th width="30%">Error (%)</th> 
                     </tr>
                 </thead>
                 <tbody>
@@ -212,6 +217,7 @@ const FalsePositionCalculator = () => {
                         <td>{element.Xl.toFixed(6)}</td>
                         <td>{element.Xm.toFixed(6)}</td>
                         <td>{element.Xr.toFixed(6)}</td>
+                        <td>{element.Error.toFixed(5)}%</td>
                         </TableRow>
                     ))}
                 </tbody>

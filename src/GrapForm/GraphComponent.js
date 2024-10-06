@@ -15,12 +15,6 @@ const ChartWrapper = styled.div`
     }
 `;
 
-const CustomTick = ({ x, y, payload }) => (
-    <text x={x} y={y} textAnchor="middle" fill="#8884d8" fontSize={15}>
-        {payload.value}
-    </text>
-);
-
 const formatDecimal = (value) => {
     return value.toFixed(4); 
 };
@@ -31,29 +25,54 @@ const GraphComponent = ({ data = [] }) => {
             <ResponsiveContainer width="100%" height="100%">
                 <LineChart
                     data={data}
-                    margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+                    margin={{ top: 30, right: 70, left: 20, bottom: 50 }}
                 >
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                    
+                    {/* กำหนด label แกน X เป็น Iteration */}
                     <XAxis 
                         dataKey="iteration" 
+                        label={{ value: 'Iteration', position: 'insideBottomRight', offset: -10 }}
                     />
+                    
+                    {/* กำหนด label แกน Y เป็น Xm */}
                     <YAxis 
-                        domain={['dataMin - 0.5', 'dataMax + 0.5']} 
-                        tickFormatter={formatDecimal} // ใช้ฟังก์ชัน formatDecimal
-                    />
-                    <Tooltip 
-                        wrapperStyle={{ backgroundColor: '#fff', border: '1px solid #ccc' }} 
-                    />
-                    <Legend />
-                    <Line
-                        type="monotone"
-                        dataKey="Xm"
-                        legendType="none"  
-                        stroke="#FF885B"
-                        strokeWidth={3} 
-                        dot={{ stroke: '#FF885B', strokeWidth: 2, r: 6 }} 
-                        activeDot={{ r: 8 }}
-                    />
+        yAxisId="left" // ID สำหรับ Xm
+        domain={['dataMin - 0.5', 'dataMax + 0.5']} // ปรับให้เหมาะสม
+        tickFormatter={formatDecimal}
+        label={{ value: 'Xm', position: 'insideTop', offset: -25 }}
+    />
+    <YAxis 
+        yAxisId="right" // ID สำหรับ Error
+        orientation="right" // แสดง YAxis ทางด้านขวา
+        domain={['dataMin - 5', 'dataMax + 5']} // ปรับให้เหมาะสม
+        tickFormatter={formatDecimal}
+        label={{ value: 'Error', position: 'insideTop', offset: -25 }}
+    />
+    <Tooltip 
+        wrapperStyle={{ backgroundColor: '#fff', border: '1px solid #ccc' }} 
+    />
+    <Legend />
+    <Line
+        type="monotone"
+        dataKey="Xm"
+        legendType="none"  
+        stroke="#FF885B"
+        strokeWidth={3} 
+        dot={{ stroke: '#FF885B', strokeWidth: 2, r: 6 }} 
+        activeDot={{ r: 8 }}
+        yAxisId="left" // เชื่อมโยงกับ YAxis สำหรับ Xm
+    />
+    <Line
+        type="monotone"
+        dataKey="Error"
+        stroke="#82ca9d"
+        strokeWidth={3}
+        legendType="none"  
+        dot={{ stroke: '#82ca9d', strokeWidth: 2, r: 6 }}
+        activeDot={{ r: 8 }}
+        yAxisId="right" // เชื่อมโยงกับ YAxis สำหรับ Error
+    />
                 </LineChart>
             </ResponsiveContainer>
         </ChartWrapper>

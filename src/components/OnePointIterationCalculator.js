@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Container, Form, Table } from "react-bootstrap";
-import { evaluate, parse } from 'mathjs'; // ใช้ parse สำหรับแปลงเป็น LaTeX
+import { evaluate, parse, derivative } from 'mathjs';
 import ButtonFormat from "../ButtonForm/button_form";
 import TextForm from "../ButtonForm/text_form";
-import CustomLineChart from "../GrapForm/CustomLineChart"; // เปลี่ยนเส้นทางให้ถูกต้อง
+import CustomLineChart from "../GrapForm/CustomLineChart"; 
 import styled from 'styled-components';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import 'katex/dist/katex.min.css';
@@ -86,24 +86,25 @@ const ErrorText = styled.div`
 const OnePointIterationCalculator = () => {
     const [data, setData] = useState([]);
     const [X, setX] = useState(0);
-    const [Equation, setEquation] = useState("x - (x^4 - 13)/(4*x^3)"); // Rearranged function
-    const [latexEquation, setLatexEquation] = useState(""); // เก็บสมการ LaTeX
-    const [X0, setX0] = useState(""); // Initial guess
+    const [Equation, setEquation] = useState("(x^4 - 13)"); // Input equation
+    const [latexEquation, setLatexEquation] = useState(""); 
+    const [X0, setX0] = useState(""); 
     const [errorTolerance, setErrorTolerance] = useState(0.00001);
     const [errorMessage, setErrorMessage] = useState("");
     const [buttonClicked, setButtonClicked] = useState(false);
-
-    // ฟังก์ชันสำหรับแปลงสมการเป็น LaTeX
+    const [currentFormula, setCurrentFormula] = useState(""); // Store the formula for display
+    const [errors, setErrors] = useState([]);
+    // Convert equation to LaTeX format
     const convertToLatex = (equation) => {
         try {
-            const node = parse(equation); // ใช้ mathjs เพื่อ parse สมการ
-            return node.toTex(); // แปลงเป็นรูปแบบ LaTeX
+            const node = parse(equation);
+            return node.toTex();
         } catch (error) {
-            return equation; // ถ้าแปลงไม่สำเร็จ ให้แสดงสมการดั้งเดิม
+            return equation; 
         }
     };
 
-    // เมื่อ Equation เปลี่ยน, ทำการแปลงสมการเป็น LaTeX
+    // Update LaTeX equation when Equation changes
     useEffect(() => {
         setLatexEquation(convertToLatex(Equation));
     }, [Equation]);
@@ -117,17 +118,23 @@ const OnePointIterationCalculator = () => {
         const MAX = 50;
         const e = parseFloat(errorTolerance);
         const results = [];
+        const errorsList = [];
+        // Calculate the derivative of the equation
+        const derivativeEquation = derivative(Equation, 'x').toString();
 
         do {
-            const xOld = xNew;
-            xNew = evaluate(Equation, { x: xOld });
+            const xOld = xNew; 
+            xNew = evaluate(`x - (${Equation}) / (${derivativeEquation})`, { x: xOld });
             ea = error(xOld, xNew);
             iter++;
-            results.push({ iteration: iter, X: xNew });
+            results.push({ iteration: iter, X: xNew, Error: ea });
+          
         } while (ea > e && iter < MAX);
-
+    
         setX(xNew);
         setData(results);
+        setCurrentFormula(`X = ${xNew.toFixed(6)} - \\frac{${Equation}}{${derivativeEquation}}`);
+        setErrors(errorsList); // Store errors
         console.log(xNew);
         console.log(results);
     };
@@ -156,11 +163,12 @@ const OnePointIterationCalculator = () => {
     const resetFields = () => {
         setData([]);
         setX(0);
-        setEquation("x - (x^4 - 13)/(4*x^3)"); // Reset to default equation
-        setLatexEquation(convertToLatex("x - (x^4 - 13)/(4*x^3)")); // Reset LaTeX
+        setEquation("(x^4 - 13)"); // Reset to default equation
+        setLatexEquation(convertToLatex("(x^4 - 13)")); // Reset LaTeX
         setX0("");
         setErrorMessage("");
         setErrorTolerance(0.00001); 
+        setCurrentFormula(""); // Reset current formula
         setButtonClicked(true);
         setTimeout(() => setButtonClicked(false), 200);
     };
@@ -172,6 +180,7 @@ const OnePointIterationCalculator = () => {
                     <tr>
                         <th width="20%">Iteration</th>
                         <th width="80%">X</th>
+                        <th width="20%">Error(%)</th> 
                     </tr>
                 </thead>
                 <tbody>
@@ -179,6 +188,8 @@ const OnePointIterationCalculator = () => {
                         <TableRow key={index}>
                             <td>{element.iteration}</td>
                             <td>{element.X.toFixed(6)}</td>
+                            <td>{element.Error.toFixed(6)}%</td>
+                           
                         </TableRow>
                     ))}
                 </tbody>
@@ -192,8 +203,8 @@ const OnePointIterationCalculator = () => {
                 <Form.Group className="mb-3">
                     <FormCon>
                         <Inline_Math>
-                            {/* แสดงผลสมการในรูปแบบ LaTeX */}
-                            <InlineMath math={latexEquation} />
+                            {/* แสดงสมการที่ได้จากการคำนวณ */}
+                            <InlineMath math={`x - \\frac{${Equation}}{${derivative(Equation, 'x')}}`} />
                         </Inline_Math>
                         <TextForm
                             placeholderText="Input function (in terms of x)"
@@ -221,7 +232,7 @@ const OnePointIterationCalculator = () => {
                     <FormTable>
                         {renderTable()}
                     </FormTable>
-                    <CustomLineChart data={data.map(item => ({ iteration: item.iteration, X: item.X }))} />
+                    <CustomLineChart data={ data}/>
                 </Form.Group>
             </Form>
         </Container>

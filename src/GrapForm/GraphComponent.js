@@ -34,18 +34,22 @@ const GraphComponent = ({ data = [] }) => {
                         dataKey="iteration" 
                         label={{ value: 'Iteration', position: 'insideBottomRight', offset: -10 }}
                     />
+                     <XAxis 
+                        dataKey="y" 
+                        label={{ value: 'Iteration', position: 'insideBottomRight', offset: -10 }}
+                    />
                     
                     {/* กำหนด label แกน Y เป็น Xm */}
                     <YAxis 
-        yAxisId="left" // ID สำหรับ Xm
-        domain={['dataMin - 0.5', 'dataMax + 0.5']} // ปรับให้เหมาะสม
+        yAxisId="left" // ID  Xm
+        domain={['dataMin - 0.5', 'dataMax + 0.5']} 
         tickFormatter={formatDecimal}
         label={{ value: 'Xm', position: 'insideTop', offset: -25 }}
     />
     <YAxis 
-        yAxisId="right" // ID สำหรับ Error
+        yAxisId="right" // ID Error
         orientation="right" // แสดง YAxis ทางด้านขวา
-        domain={['dataMin - 5', 'dataMax + 5']} // ปรับให้เหมาะสม
+        domain={['dataMin - 5', 'dataMax + 5']} 
         tickFormatter={formatDecimal}
         label={{ value: 'Error', position: 'insideTop', offset: -25 }}
     />
@@ -61,7 +65,17 @@ const GraphComponent = ({ data = [] }) => {
         strokeWidth={3} 
         dot={{ stroke: '#FF885B', strokeWidth: 2, r: 6 }} 
         activeDot={{ r: 8 }}
-        yAxisId="left" // เชื่อมโยงกับ YAxis สำหรับ Xm
+        yAxisId="left" //  Xm
+    />
+     <Line
+        type="monotone"
+        dataKey="x"
+        legendType="none"  
+        stroke="#FF885B"
+        strokeWidth={3} 
+        dot={{ stroke: '#FF885B', strokeWidth: 2, r: 6 }} 
+        activeDot={{ r: 8 }}
+        yAxisId="left" //  Xm
     />
     <Line
         type="monotone"
@@ -71,7 +85,7 @@ const GraphComponent = ({ data = [] }) => {
         legendType="none"  
         dot={{ stroke: '#82ca9d', strokeWidth: 2, r: 6 }}
         activeDot={{ r: 8 }}
-        yAxisId="right" // เชื่อมโยงกับ YAxis สำหรับ Error
+        yAxisId="right" // Error
     />
                 </LineChart>
             </ResponsiveContainer>

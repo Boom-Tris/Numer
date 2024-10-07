@@ -124,8 +124,8 @@ const FalsePositionCalculator = () => {
             xm = xr - (fXr * (xl - xr)) / (fXl - fXr);
             fXm = evaluate(Equation, { x: xm });
     
-            // คำนวณความผิดพลาด
-            if (iter > 0) { // เพื่อหลีกเลี่ยงการแบ่งด้วย 0
+           
+            if (iter > 0) { // หลีกเลี่ยง 0
                 ea = error(results[iter - 1].Xm, xm);
             }
     

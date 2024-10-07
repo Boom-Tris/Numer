@@ -35,9 +35,9 @@ const CustomLineChart = ({ data = [] }) => {
                         label={{ value: 'X', position: 'insideTop', offset: -25 }}
                     />
                     <YAxis 
-        yAxisId="right" // ID สำหรับ Error
+        yAxisId="right" // ID  Error
         orientation="right" // แสดง YAxis ทางด้านขวา
-        domain={['dataMin - 5', 'dataMax + 5']} // ปรับให้เหมาะสม
+        domain={['dataMin - 5', 'dataMax + 5']} 
         tickFormatter={formatDecimal}
         label={{ value: 'Error', position: 'insideTop', offset: -25 }}
     />
@@ -62,7 +62,7 @@ const CustomLineChart = ({ data = [] }) => {
         legendType="none"  
         dot={{ stroke: '#82ca9d', strokeWidth: 2, r: 6 }}
         activeDot={{ r: 8 }}
-        yAxisId="right" // เชื่อมโยงกับ YAxis สำหรับ Error
+        yAxisId="right" // Error
     />
                 </LineChart>
             </ResponsiveContainer>

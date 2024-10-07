@@ -163,12 +163,12 @@ const OnePointIterationCalculator = () => {
     const resetFields = () => {
         setData([]);
         setX(0);
-        setEquation("(x^4 - 13)"); // Reset to default equation
-        setLatexEquation(convertToLatex("(x^4 - 13)")); // Reset LaTeX
+        setEquation("(x^4 - 13)"); 
+        setLatexEquation(convertToLatex("(x^4 - 13)")); 
         setX0("");
         setErrorMessage("");
         setErrorTolerance(0.00001); 
-        setCurrentFormula(""); // Reset current formula
+        setCurrentFormula(""); 
         setButtonClicked(true);
         setTimeout(() => setButtonClicked(false), 200);
     };

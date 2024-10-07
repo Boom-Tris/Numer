@@ -8,6 +8,10 @@ import FalsePositionCalculator from './components/FalsePositionCalculator';
 import OnePointIterationCalculator from './components/OnePointIterationCalculator';
 import NewtonRaphsonCalculator from './components/NewtonRaphsonCalculator';
 import MultipleSelect from './main';
+import CramerCalculator from './Matrix/CramerCalculator';
+import GaussEliminationCalculator from './Matrix/GaussEliminationCalculator';
+import GaussJordanCalculator from './Matrix/GaussJordanCalculator';
+import MatrixInversionCalculator from './Matrix/MatrixInversionCalculator';
 import {
   BrowserRouter as Router,
   Routes,
@@ -45,10 +49,30 @@ function App() {
                 element={<FalsePositionCalculator/>}
               />
 
+
               <Route
                 path="/OnePointIterationCalculator"
                 element={<OnePointIterationCalculator/>}
               />
+
+                <Route
+                path="/CramerCalculator"
+                element={<CramerCalculator/>}
+              />
+
+              <Route
+                path="/GaussEliminationCalculator"
+                element={<GaussEliminationCalculator/>}
+              />
+               <Route
+                path="/GaussJordanCalculator"
+                element={<GaussJordanCalculator/>}
+              />
+               <Route
+                path="/MatrixInversionCalculator"
+                element={<MatrixInversionCalculator/>}
+              />
+
 
 
              

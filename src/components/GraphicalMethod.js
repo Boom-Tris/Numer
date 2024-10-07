@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Container, Form, Table } from "react-bootstrap";
-import { evaluate, parse } from 'mathjs';
+import { evaluate, parse, re } from 'mathjs';
 import ButtonFormat from "../ButtonForm/button_form";
 import TextForm from "../ButtonForm/text_form";
 import GraphComponent from "../GrapForm/GraphComponent";
@@ -81,12 +81,11 @@ const ErrorText = styled.div`
     font-size: 1.5vh;
 `;
 
-
-
 const GraphicalCalculator = () => {
     const [data, setData] = useState([]);
     const [X, setX] = useState(0);
     const [Equation, setEquation] = useState("(x^4) - 13");
+    const [stepSize, setStepSize] = useState(0.001); // เพิ่ม state สำหรับ stepSize
     const [errorMessage, setErrorMessage] = useState("");
     const [buttonClicked, setButtonClicked] = useState(false);
     const [latexEquation, setLatexEquation] = useState(""); 
@@ -106,11 +105,10 @@ const GraphicalCalculator = () => {
 
     const calculateGraphicalMethod = () => {
         const results = [];
-        const stepSize = 0.1; 
         let xm, fXm;
 
         // กำหนดช่วงค่าตั้งแต่ 0 ถึง 10 (หรือช่วงอื่นที่คุณต้องการ)
-        for (let i = 0; i <= 10; i += stepSize) { 
+        for (let i = 0; i <= 10; i += parseFloat(stepSize)) { // ใช้ค่า stepSize จาก state
             fXm = evaluate(Equation, { x: i });
             results.push({ x: i, y: fXm });
         }
@@ -126,6 +124,7 @@ const GraphicalCalculator = () => {
         }
 
         setData(results);
+        console.log(results);
     };
 
     const calculateRoot = () => {
@@ -147,6 +146,7 @@ const GraphicalCalculator = () => {
         setData([]);
         setX(0);
         setEquation("(x^4) - 13");
+        setStepSize(0.001); // รีเซ็ตค่า stepSize
         setErrorMessage("");
         setButtonClicked(true);
         setTimeout(() => setButtonClicked(false), 200);
@@ -189,6 +189,13 @@ const GraphicalCalculator = () => {
                             onValueChange={handleInputChange(setEquation)}
                         />
                     </FormCon>
+                    <FormCon>
+                        <TextForm
+                            placeholderText="Input step size"
+                            value={stepSize}
+                            onValueChange={handleInputChange(setStepSize)} // เพิ่ม input สำหรับ stepSize
+                        />
+                    </FormCon>
                     <FormButton>
                         <ButtonFormat text='Calculate' onClick={calculateRoot} variant="dark" />
                         <Restart $isClicked={buttonClicked} onClick={resetFields}>
@@ -196,7 +203,7 @@ const GraphicalCalculator = () => {
                         </Restart>
                     </FormButton>
                     <FormAsn>
-                        <BlockMath math={`Xm = ${X.toPrecision(7)}`} />
+                        <BlockMath math={`X = ${X.toPrecision(7)}`} />
                     </FormAsn>
                     {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
                     <FormTable>

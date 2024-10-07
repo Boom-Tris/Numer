@@ -96,7 +96,7 @@ const BisectionCalculator = () => {
             const node = parse(equation); // ใช้ mathjs เพื่อ parse สมการ
             return node.toTex(); // แปลงเป็นรูปแบบ LaTeX
         } catch (error) {
-            return equation; // ถ้าแปลงไม่สำเร็จ ให้แสดงสมการดั้งเดิม
+            return equation; // ถ้าแปลงไม่สำเร็จ ให้แสดงสมการเดิม
         }
     };
 

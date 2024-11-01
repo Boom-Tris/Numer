@@ -1,0 +1,20 @@
+.format-buttonM {
+   
+        
+    background-color: #3A6D8C;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.format-buttonM:hover {
+    background-color: white;
+    border: 1px solid #3A6D8C;
+    color: #3A6D8C;
+
+
+
+}

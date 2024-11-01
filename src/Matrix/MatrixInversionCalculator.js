@@ -1,12 +1,32 @@
 import React, { useState } from 'react';
-import { Container, Form, Button, Table } from 'react-bootstrap';
 import styled from 'styled-components';
 import { BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
-
-const StyledTable = styled(Table)`
+import ButtonFormatM from '../ButtonForm/button_M';
+const StyledContainer = styled.div`
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+`;
+const Form = styled.div`
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+`;
+const StyledTable = styled.table`
+   width: 100%;
+    border-collapse: collapse;
     text-align: center;
     margin-top: 20px;
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
 `;
 
 const ErrorText = styled.div`
@@ -15,34 +35,66 @@ const ErrorText = styled.div`
     margin-top: 10px;
 `;
 
+const InverseMatrixContainer = styled.div`
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+`;
+const Select = styled.select`
+    padding: 5px;
+    font-size: 1em;
+    margin-bottom: 20px;
+`;
+const StepContainer = styled.div`
+   
+`;
+
 const MatrixInversionCalculator = () => {
-    const [size, setSize] = useState(3); // Matrix size for a 3x3 matrix
+    const [size, setSize] = useState(3);
     const [matrix, setMatrix] = useState(Array(size).fill().map(() => Array(size).fill('')));
-    const [identity, setIdentity] = useState(Array(size).fill().map(() => Array(size).fill('')));
-    const [steps, setSteps] = useState([]);
     const [inverse, setInverse] = useState([]);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [steps, setSteps] = useState([]);
 
     const calculateInverse = () => {
-        setSteps([]);  // Reset steps for new calculation
+        setErrorMessage('');
+        setSteps([]);
 
         const A = matrix.map(row => row.map(Number));
-        const I = identity.map((row, i) => row.map((_, j) => (i === j ? 1 : 0))); // Identity matrix
         const n = A.length;
 
-        // Combine A and I into an augmented matrix [A|I]
-        let augmented = A.map((row, i) => [...row, ...I[i]]);
+        const augmented = A.map((row, i) => {
+            const identityRow = Array(n).fill(0);
+            identityRow[i] = 1;
+            return [...row, ...identityRow];
+        });
 
-        // Gauss-Jordan elimination process
         for (let i = 0; i < n; i++) {
-            // Make the diagonal element 1
-            const factor = augmented[i][i];
-            for (let j = 0; j < 2 * n; j++) {
-                augmented[i][j] /= factor;
+            let maxRow = i;
+            for (let k = i + 1; k < n; k++) {
+                if (Math.abs(augmented[k][i]) > Math.abs(augmented[maxRow][i])) {
+                    maxRow = k;
+                }
+            }
+            [augmented[i], augmented[maxRow]] = [augmented[maxRow], augmented[i]];
+
+            if (augmented[i][i] === 0) {
+                setErrorMessage('Matrix is singular and cannot be inverted.');
+                return;
             }
 
-            // Make all elements in the current column except for the diagonal element 0
+            const diag = augmented[i][i];
+            for (let j = 0; j < 2 * n; j++) {
+                augmented[i][j] /= diag;
+            }
+
+            const stepAfterDiagonal = `\\text{Step ${i * 2 + 1}: Make A[${i}][${i}] = 1} \\begin{bmatrix}${augmented.map(row => row.join('&')).join('\\\\')}\\end{bmatrix}`;
+            setSteps(prevSteps => [...prevSteps, stepAfterDiagonal]);
+
             for (let k = 0; k < n; k++) {
-                if (i !== k) {
+                if (k !== i) {
                     const factor = augmented[k][i];
                     for (let j = 0; j < 2 * n; j++) {
                         augmented[k][j] -= factor * augmented[i][j];
@@ -50,12 +102,10 @@ const MatrixInversionCalculator = () => {
                 }
             }
 
-            // Log the current step
-            const step = `\\text{Step ${i + 1}:} \\begin{bmatrix}${augmented.map(row => row.slice(0, n).join('&')).join('\\\\')}\\end{bmatrix} \\quad | \\quad \\begin{bmatrix}${augmented.map(row => row.slice(n).join('&')).join('\\\\')}\\end{bmatrix}`;
-            setSteps(prevSteps => [...prevSteps, step]);
+            const stepAfterElimination = `\\text{Step ${i * 2 + 2}: Eliminate column ${i}} \\begin{bmatrix}${augmented.map(row => row.join('&')).join('\\\\')}\\end{bmatrix}`;
+            setSteps(prevSteps => [...prevSteps, stepAfterElimination]);
         }
 
-        // Extract inverse from the augmented matrix
         const inv = augmented.map(row => row.slice(n));
         setInverse(inv);
     };
@@ -66,64 +116,64 @@ const MatrixInversionCalculator = () => {
         setMatrix(newMatrix);
     };
 
+    const handleSizeChange = (event) => {
+        const newSize = Number(event.target.value);
+        setSize(newSize);
+        setMatrix(Array(newSize).fill().map(() => Array(newSize).fill('')));
+        setInverse([]);
+        setSteps([]);
+    };
+
     return (
-        <Container>
+        <StyledContainer>
             <h2>Matrix Inversion Calculator</h2>
             <Form>
-                <Form.Group controlId="formMatrixSize">
-                    <Form.Label>Matrix Size (Number of Equations)</Form.Label>
-                    <Form.Control as="select" value={size} onChange={(e) => setSize(Number(e.target.value))}>
-                        {[2, 3, 4].map(i => (
-                            <option key={i} value={i}>{i}</option>
-                        ))}
-                    </Form.Control>
-                </Form.Group>
+                <label htmlFor="matrixSize">Matrix Size</label>
+                <Select  id="matrixSize" value={size} onChange={handleSizeChange}>
+                    {[...Array(10).keys()].map(i => (
+                        <option key={i + 1} value={i + 1}>{i + 1}</option>
+                    ))}
+                </Select>
+          
 
-                <StyledTable striped bordered>
-                    <thead>
-                        <tr>
-                            {[...Array(size).keys()].map(colIndex => (
-                                <th key={colIndex}>A[{colIndex}]</th>
+            <StyledTable>
+                <thead>
+                    <tr>
+                        <th>Row / Column</th>
+                        {[...Array(size).keys()].map(colIndex => (
+                            <th key={colIndex}>A[{0}][{colIndex}]</th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    {Array.from({ length: size }).map((_, rowIndex) => (
+                        <tr key={rowIndex}>
+                            <td>{`Row ${rowIndex + 1}`}</td>
+                            {Array.from({ length: size }).map((_, colIndex) => (
+                                <td key={colIndex}>
+                                    <input
+                                        type="number"
+                                        placeholder={`A[${rowIndex}][${colIndex}]`}
+                                        value={matrix[rowIndex][colIndex]}
+                                        onChange={handleMatrixChange(rowIndex, colIndex)}
+                                        style={{ width: '80px' }}
+                                    />
+                                </td>
                             ))}
                         </tr>
-                    </thead>
-                    <tbody>
-                        {Array.from({ length: size }).map((_, rowIndex) => (
-                            <tr key={rowIndex}>
-                                {Array.from({ length: size }).map((_, colIndex) => (
-                                    <td key={colIndex}>
-                                        <Form.Control
-                                            type="number"
-                                            placeholder={`A[${rowIndex}][${colIndex}]`}
-                                            value={matrix[rowIndex][colIndex]}
-                                            onChange={handleMatrixChange(rowIndex, colIndex)}
-                                            style={{ width: '80px' }}
-                                        />
-                                    </td>
-                                ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </StyledTable>
-
-                <Button variant="primary" onClick={calculateInverse}>
-                    Calculate Inversion
-                </Button>
-            </Form>
-
-            {steps.length > 0 && (
-                <div style={{ marginTop: '20px' }}>
-                    <h4>Calculation Steps:</h4>
-                    {steps.map((step, index) => (
-                        <BlockMath key={index} math={step} />
                     ))}
-                </div>
-            )}
+                </tbody>
+            </StyledTable>
+
+          
+            <ButtonFormatM text='Calculate Inversion' onClick={calculateInverse} />
+            </Form>
+            {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
 
             {inverse.length > 0 && (
-                <div style={{ marginTop: '20px' }}>
+                <InverseMatrixContainer>
                     <h4>Inverse Matrix:</h4>
-                    <StyledTable striped bordered hover>
+                    <StyledTable>
                         <tbody>
                             {inverse.map((row, index) => (
                                 <tr key={index}>
@@ -134,9 +184,18 @@ const MatrixInversionCalculator = () => {
                             ))}
                         </tbody>
                     </StyledTable>
-                </div>
+                </InverseMatrixContainer>
             )}
-        </Container>
+
+            {steps.length > 0 && (
+                <StepContainer>
+                    <h4>Calculation Steps:</h4>
+                    {steps.map((step, index) => (
+                        <BlockMath key={index} math={step} />
+                    ))}
+                </StepContainer>
+            )}
+        </StyledContainer>
     );
 };
 

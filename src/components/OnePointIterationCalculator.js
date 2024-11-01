@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Container, Form, Table } from "react-bootstrap";
-import { evaluate, parse, derivative } from 'mathjs';
+import { evaluate, parse } from 'mathjs';
 import ButtonFormat from "../ButtonForm/button_form";
 import TextForm from "../ButtonForm/text_form";
 import CustomLineChart from "../GrapForm/CustomLineChart"; 
@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import 'katex/dist/katex.min.css';
 import { BlockMath, InlineMath } from 'react-katex';
-
+import equations from './equations'; // นำเข้ารายการสมการ
 // Styled components
 const Inline_Math = styled.div`
     font-size: 5vh; 
@@ -24,7 +24,7 @@ const ColorIcon = {
     fontSize: 40 
 };
 
-const Restart = styled.button`
+const RestartButton = styled.button`
     cursor: pointer;
     background-color: ${({ $isClicked }) => ($isClicked ? '#C96868' : '#FF8A8A')};
     border: none;
@@ -44,7 +44,7 @@ const TableRow = styled.tr`
     }
 `;
 
-const FormCon = styled.div`
+const FormContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;  
@@ -57,7 +57,7 @@ const FormInput = styled.div`
     justify-content: center;  
 `;
 
-const FormButton = styled.div`
+const FormButtonContainer = styled.div`
     margin-top: 3vh;
     display: flex;
     gap: 1vh;
@@ -65,7 +65,7 @@ const FormButton = styled.div`
     justify-content: center;
 `;
 
-const FormAsn = styled.div`
+const ResultDisplay = styled.div`
     display: flex;
     margin-top: 2vh;
     justify-content: center;
@@ -73,7 +73,7 @@ const FormAsn = styled.div`
     font-size: 3vh;
 `;
 
-const FormTable = styled.div`
+const TableContainer = styled.div`
     font-size: 2vh;
     margin: 5vh;
 `;
@@ -86,14 +86,14 @@ const ErrorText = styled.div`
 const OnePointIterationCalculator = () => {
     const [data, setData] = useState([]);
     const [X, setX] = useState(0);
-    const [Equation, setEquation] = useState("(x^4 - 13)"); // Input equation
+    const [Equation, setEquation] = useState("(x^4) - 13"); // Initial equation
     const [latexEquation, setLatexEquation] = useState(""); 
     const [X0, setX0] = useState(""); 
     const [errorTolerance, setErrorTolerance] = useState(0.00001);
     const [errorMessage, setErrorMessage] = useState("");
     const [buttonClicked, setButtonClicked] = useState(false);
-    const [currentFormula, setCurrentFormula] = useState(""); // Store the formula for display
-    const [errors, setErrors] = useState([]);
+    const [gEquation, setGEquation] = useState(""); // g(x) equation
+    
     // Convert equation to LaTeX format
     const convertToLatex = (equation) => {
         try {
@@ -104,41 +104,57 @@ const OnePointIterationCalculator = () => {
         }
     };
 
-    // Update LaTeX equation when Equation changes
     useEffect(() => {
         setLatexEquation(convertToLatex(Equation));
+        setGEquation(transformEquationToG(Equation)); // Update g(x)
     }, [Equation]);
 
     const error = (xold, xnew) => Math.abs((xnew - xold) / xnew) * 100;
 
+    // Function to transform f(x) to g(x)
+    const transformEquationToG = (equation) => {
+        try {
+            const parsedEquation = parse(equation);
+            // Modify based on the equation structure
+            if (parsedEquation) {
+                // Assume transforming x^4 - 13 to x = sqrt[4]{13}
+                // Adjust as needed for the iteration
+            } 
+            return equation; // Return original if no transformation
+        } catch (error) {
+            return equation; 
+        }
+    };
+
+    // Calculate using One-Point Iteration method
     const calculateOnePointIteration = (x0) => {
         let xNew = x0;
         let ea = 100;
         let iter = 0;
-        const MAX = 50;
+        const MAX_ITERATIONS = 50;
         const e = parseFloat(errorTolerance);
         const results = [];
-        const errorsList = [];
-        // Calculate the derivative of the equation
-        const derivativeEquation = derivative(Equation, 'x').toString();
-
+        const transformedEquation = gEquation; // g(x)
+    
         do {
-            const xOld = xNew; 
-            xNew = evaluate(`x - (${Equation}) / (${derivativeEquation})`, { x: xOld });
+            const xOld = xNew;
+            xNew = evaluate(transformedEquation, { x: xOld }); // Use g(x)
             ea = error(xOld, xNew);
             iter++;
             results.push({ iteration: iter, X: xNew, Error: ea });
-          
-        } while (ea > e && iter < MAX);
     
+            // Debugging: Print values for each iteration
+            console.log(`Iteration: ${iter}, X: ${xNew}, Error: ${ea}`);
+        } while (ea > e && iter < MAX_ITERATIONS);
+        
         setX(xNew);
         setData(results);
-        setCurrentFormula(`X = ${xNew.toFixed(6)} - \\frac{${Equation}}{${derivativeEquation}}`);
-        setErrors(errorsList); // Store errors
-        console.log(xNew);
-        console.log(results);
+        setErrorMessage("");
     };
-
+    const fetchRandomEquation = () => {
+        const randomIndex = Math.floor(Math.random() * equations.length);
+        setEquation(equations[randomIndex]);
+    };
     const isValidNumber = (value) => /^-?\d+(\.\d+)?$/.test(value);
 
     const calculateRoot = () => {
@@ -163,12 +179,11 @@ const OnePointIterationCalculator = () => {
     const resetFields = () => {
         setData([]);
         setX(0);
-        setEquation("(x^4 - 13)"); 
-        setLatexEquation(convertToLatex("(x^4 - 13)")); 
+        setEquation("(x^4) - 13"); // Reset to initial equation
+        setLatexEquation(convertToLatex("(x^4) - 13")); 
         setX0("");
         setErrorMessage("");
         setErrorTolerance(0.00001); 
-        setCurrentFormula(""); 
         setButtonClicked(true);
         setTimeout(() => setButtonClicked(false), 200);
     };
@@ -189,7 +204,6 @@ const OnePointIterationCalculator = () => {
                             <td>{element.iteration}</td>
                             <td>{element.X.toFixed(6)}</td>
                             <td>{element.Error.toFixed(6)}%</td>
-                           
                         </TableRow>
                     ))}
                 </tbody>
@@ -201,17 +215,16 @@ const OnePointIterationCalculator = () => {
         <Container>
             <Form>
                 <Form.Group className="mb-3">
-                    <FormCon>
+                    <FormContainer>
                         <Inline_Math>
-                            {/* แสดงสมการที่ได้จากการคำนวณ */}
-                            <InlineMath math={`x - \\frac{${Equation}}{${derivative(Equation, 'x')}}`} />
+                            <InlineMath math={`g(x) = ${convertToLatex(gEquation)}`} />
                         </Inline_Math>
                         <TextForm
-                            placeholderText="Input function (in terms of x)"
+                            placeholderText="Input function f(x)"
                             value={Equation}
                             onValueChange={handleInputChange(setEquation)}
                         />
-                    </FormCon>
+                    </FormContainer>
                     <FormInput>
                         <TextForm
                             placeholderText="Input X0"
@@ -219,24 +232,25 @@ const OnePointIterationCalculator = () => {
                             onValueChange={handleInputChange(setX0)}
                         />
                     </FormInput>
-                    <FormButton>
+                    <FormButtonContainer>
                         <ButtonFormat text='Calculate' onClick={calculateRoot} variant="dark" />
-                        <Restart isClicked={buttonClicked} onClick={resetFields}>
+                        <ButtonFormat text='Fetch Random Equation' onClick={fetchRandomEquation} variant="info" />
+                        <RestartButton $isClicked={buttonClicked} onClick={resetFields}>
                             <RestartAltIcon style={ColorIcon} />
-                        </Restart>
-                    </FormButton>
-                    <FormAsn>
+                        </RestartButton>
+                    </FormButtonContainer>
+                    <ResultDisplay>
                         <BlockMath math={`X = ${X.toPrecision(7)}`} />
-                    </FormAsn>
+                    </ResultDisplay>
                     {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
-                    <FormTable>
+                    <TableContainer>
                         {renderTable()}
-                    </FormTable>
-                    <CustomLineChart data={ data}/>
+                    </TableContainer>
+                    <CustomLineChart data={data} />
                 </Form.Group>
             </Form>
         </Container>
     );
-};
+};  
 
 export default OnePointIterationCalculator;

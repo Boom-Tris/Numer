@@ -6,7 +6,7 @@ import TextForm from "../ButtonForm/text_form";
 import GraphComponent from "../GrapForm/GraphComponent";
 import styled from 'styled-components';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-
+import equations from './equations'; // นำเข้ารายการสมการ
 import 'katex/dist/katex.min.css';
 import { BlockMath, InlineMath } from 'react-katex';
 
@@ -93,7 +93,7 @@ const FalsePositionCalculator = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const [buttonClicked, setButtonClicked] = useState(false);
     const [latexEquation, setLatexEquation] = useState(""); 
-    
+
     const convertToLatex = (equation) => {
         try {
             const node = parse(equation); // ใช้ mathjs เพื่อ parse สมการ
@@ -108,7 +108,10 @@ const FalsePositionCalculator = () => {
         setLatexEquation(convertToLatex(Equation));
     }, [Equation]);
 
-    
+    const fetchRandomEquation = () => {
+        const randomIndex = Math.floor(Math.random() * equations.length);
+        setEquation(equations[randomIndex]);
+    };
     const error = (xold, xnew) => Math.abs((xnew - xold) / xnew) * 100;
     const calculateFalsePosition = (xl, xr) => {
         let xm, fXm, fXl, fXr, ea = 100;
@@ -262,6 +265,7 @@ const FalsePositionCalculator = () => {
                     </FormInput>
                     <FormButton>
                         <ButtonFormat text='Calculate' onClick={calculateRoot} variant="dark" />
+                        <ButtonFormat text='Fetch Random Equation' onClick={fetchRandomEquation} variant="info" />
                         <Restart $isClicked={buttonClicked} onClick={resetFields}>
                             <RestartAltIcon style={ColorIcon} />
                         </Restart>

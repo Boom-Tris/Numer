@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Container, Form, Table } from "react-bootstrap";
-import { evaluate, parse, re } from 'mathjs';
+import { evaluate, parse } from 'mathjs';
 import ButtonFormat from "../ButtonForm/button_form";
 import TextForm from "../ButtonForm/text_form";
 import GraphComponent from "../GrapForm/GraphComponent";
@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
+import equations from './equations'; // นำเข้ารายการสมการ
 
 const Inline_Math = styled.div`
     font-size: 5vh; 
@@ -50,11 +51,6 @@ const FormCon = styled.div`
     justify-content: center;  
 `;
 
-const FormInput = styled.div`
-    display: flex;
-    gap: 2vh; 
-`;
-
 const FormButton = styled.div`
     margin-top: 3vh;
     display: flex;
@@ -85,7 +81,7 @@ const GraphicalCalculator = () => {
     const [data, setData] = useState([]);
     const [X, setX] = useState(0);
     const [Equation, setEquation] = useState("(x^4) - 13");
-    const [stepSize, setStepSize] = useState(0.001); // เพิ่ม state สำหรับ stepSize
+    const [stepSize, setStepSize] = useState(0.001);
     const [errorMessage, setErrorMessage] = useState("");
     const [buttonClicked, setButtonClicked] = useState(false);
     const [latexEquation, setLatexEquation] = useState(""); 
@@ -107,15 +103,12 @@ const GraphicalCalculator = () => {
         const results = [];
         let xm, fXm;
 
-        // กำหนดช่วงค่าตั้งแต่ 0 ถึง 10 (หรือช่วงอื่นที่คุณต้องการ)
-        for (let i = 0; i <= 10; i += parseFloat(stepSize)) { // ใช้ค่า stepSize จาก state
+        for (let i = 0; i <= 10; i += parseFloat(stepSize)) {
             fXm = evaluate(Equation, { x: i });
             results.push({ x: i, y: fXm });
         }
 
-        // หาค่าที่ตัดกันกับแกน x (y = 0)
         for (let i = 0; i < results.length - 1; i++) {
-            // เช็คการเปลี่ยนแปลงจากบวกเป็นลบ
             if ((results[i].y >= 0 && results[i + 1].y <= 0) || (results[i].y <= 0 && results[i + 1].y >= 0)) {
                 xm = (results[i].x + results[i + 1].x) / 2;
                 setX(xm);
@@ -146,10 +139,16 @@ const GraphicalCalculator = () => {
         setData([]);
         setX(0);
         setEquation("(x^4) - 13");
-        setStepSize(0.001); // รีเซ็ตค่า stepSize
+        setStepSize(0.001);
         setErrorMessage("");
         setButtonClicked(true);
         setTimeout(() => setButtonClicked(false), 200);
+    };
+
+    // ฟังก์ชันใหม่เพื่อดึงสมการแบบสุ่มจากฐานข้อมูล
+    const fetchRandomEquation = () => {
+        const randomIndex = Math.floor(Math.random() * equations.length);
+        setEquation(equations[randomIndex]);
     };
 
     const renderTable = () => (
@@ -193,11 +192,12 @@ const GraphicalCalculator = () => {
                         <TextForm
                             placeholderText="Input step size"
                             value={stepSize}
-                            onValueChange={handleInputChange(setStepSize)} // เพิ่ม input สำหรับ stepSize
+                            onValueChange={handleInputChange(setStepSize)}
                         />
                     </FormCon>
                     <FormButton>
                         <ButtonFormat text='Calculate' onClick={calculateRoot} variant="dark" />
+                        <ButtonFormat text='Fetch Random Equation' onClick={fetchRandomEquation} variant="info" />
                         <Restart $isClicked={buttonClicked} onClick={resetFields}>
                             <RestartAltIcon style={ColorIcon} />
                         </Restart>

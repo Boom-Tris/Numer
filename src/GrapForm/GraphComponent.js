@@ -42,17 +42,11 @@ const GraphComponent = ({ data = [] }) => {
                     {/* กำหนด label แกน Y เป็น Xm */}
                     <YAxis 
         yAxisId="left" // ID  Xm
-        domain={['dataMin - 0.5', 'dataMax + 0.5']} 
+        domain={['dataMin - 5', 'dataMax + 5']} 
         tickFormatter={formatDecimal}
         label={{ value: 'Xm', position: 'insideTop', offset: -25 }}
     />
-    <YAxis 
-        yAxisId="right" // ID Error
-        orientation="right" // แสดง YAxis ทางด้านขวา
-        domain={['dataMin - 5', 'dataMax + 5']} 
-        tickFormatter={formatDecimal}
-        label={{ value: 'Error', position: 'insideTop', offset: -25 }}
-    />
+   
     <Tooltip 
         wrapperStyle={{ backgroundColor: '#fff', border: '1px solid #ccc' }} 
     />
@@ -77,6 +71,16 @@ const GraphComponent = ({ data = [] }) => {
         activeDot={{ r: 8 }}
         yAxisId="left" //  Xm
     />
+     <Line
+        type="monotone"
+        dataKey="X2"
+        legendType="none"  
+        stroke="#FF885B"
+        strokeWidth={3} 
+        dot={{ stroke: '#FF885B', strokeWidth: 2, r: 6 }} 
+        activeDot={{ r: 8 }}
+        yAxisId="left" //  Xm
+    />
     <Line
         type="monotone"
         dataKey="Error"
@@ -85,7 +89,7 @@ const GraphComponent = ({ data = [] }) => {
         legendType="none"  
         dot={{ stroke: '#82ca9d', strokeWidth: 2, r: 6 }}
         activeDot={{ r: 8 }}
-        yAxisId="right" // Error
+        yAxisId="left" // Error
     />
                 </LineChart>
             </ResponsiveContainer>

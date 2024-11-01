@@ -12,6 +12,12 @@ import CramerCalculator from './Matrix/CramerCalculator';
 import GaussEliminationCalculator from './Matrix/GaussEliminationCalculator';
 import GaussJordanCalculator from './Matrix/GaussJordanCalculator';
 import MatrixInversionCalculator from './Matrix/MatrixInversionCalculator';
+import TaylorSeriesCalculator from './components/TaylorSeriesCalculator';
+import SecantMethodCalculator from './components/SecantMethodCalculator';
+import LUDecompositionCalculator from './Matrix/LUDecompositionCalculator';
+import CholeskyDecompositionCalculator from './Matrix/CholeskyDecompositionCalculator';
+import NewtonsDividedDifferencesCalculator from './INTERPOLATION  AND  EXTRAPOLATION/NewtonsDividedDifferencesCalculator';
+import LagrangeInterpolationCalculator from './INTERPOLATION  AND  EXTRAPOLATION/LagrangeInterpolationCalculator';
 import {
   BrowserRouter as Router,
   Routes,
@@ -54,6 +60,18 @@ function App() {
                 path="/OnePointIterationCalculator"
                 element={<OnePointIterationCalculator/>}
               />
+              <Route
+                path="/NewtonRaphsonCalculator"
+                element={<NewtonRaphsonCalculator/>}
+              />
+              <Route
+                path="/TaylorSeriesCalculator"
+                element={<TaylorSeriesCalculator/>}
+              />
+              <Route
+                path="/SecantMethodCalculator"
+                element={<SecantMethodCalculator/>}
+              />
 
                 <Route
                 path="/CramerCalculator"
@@ -71,6 +89,22 @@ function App() {
                <Route
                 path="/MatrixInversionCalculator"
                 element={<MatrixInversionCalculator/>}
+              />
+               <Route
+                path="/LUDecompositionCalculator"
+                element={<LUDecompositionCalculator/>}
+              />
+               <Route
+                path="/CholeskyDecompositionCalculator"
+                element={<CholeskyDecompositionCalculator/>}
+              />
+                <Route
+                path="/NewtonsDividedDifferencesCalculator"
+                element={<NewtonsDividedDifferencesCalculator/>}
+              />
+                <Route
+                path="/LagrangeInterpolationCalculator"
+                element={<LagrangeInterpolationCalculator/>}
               />
 
 

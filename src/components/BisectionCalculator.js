@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
-
+import equations from './equations'; // นำเข้ารายการสมการ
 
 const Inline_Math = styled.div`
 font-size: 5vh; 
@@ -99,7 +99,10 @@ const BisectionCalculator = () => {
             return equation; // ถ้าแปลงไม่สำเร็จ ให้แสดงสมการเดิม
         }
     };
-
+    const fetchRandomEquation = () => {
+        const randomIndex = Math.floor(Math.random() * equations.length);
+        setEquation(equations[randomIndex]);
+    };
     // เมื่อ Equation เปลี่ยน, ทำการแปลงสมการเป็น LaTeX
     useEffect(() => {
         setLatexEquation(convertToLatex(Equation));
@@ -178,7 +181,7 @@ const BisectionCalculator = () => {
         setXL("");
         setXR("");
         setErrorMessage("");
-        setErrorTolerance(0.00001); 
+        setErrorTolerance(0.0001); 
         setButtonClicked(true);
         setTimeout(() => setButtonClicked(false), 200);
     };
@@ -202,7 +205,7 @@ const BisectionCalculator = () => {
                             <td>{element.Xl.toFixed(6)}</td>
                             <td>{element.Xm.toFixed(6)}</td>
                             <td>{element.Xr.toFixed(6)}</td>
-                            <td>{element.Error.toFixed(5)}%</td>
+                            <td>{element.Error.toFixed(6)}%</td>
                         </TableRow>
                     ))}
                 </tbody>
@@ -247,7 +250,9 @@ const BisectionCalculator = () => {
                         />
                     </FormInput>
                     <FormButton>
+                        
                         <ButtonFormat text='Calculate' onClick={calculateRoot} variant="dark" />
+                        <ButtonFormat text='Fetch Random Equation' onClick={fetchRandomEquation} variant="info" />
                         <Restart $isClicked={buttonClicked} onClick={resetFields}>
                             <RestartAltIcon style={ColorIcon} />
                         </Restart>

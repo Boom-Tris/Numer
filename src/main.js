@@ -55,6 +55,17 @@ const MultipleSelect = () => {
           <MenuItem value="BisectionCalculator">Bisection</MenuItem>
           <MenuItem value="FalsePositionCalculator">False Position</MenuItem>
           <MenuItem value="OnePointIterationCalculator">One Point Iteration</MenuItem>
+          <MenuItem value="NewtonRaphsonCalculator">NewtonRaphsonCalculator</MenuItem>
+          <MenuItem value="TaylorSeriesCalculator">TaylorSeriesCalculator</MenuItem>
+          <MenuItem value="SecantMethodCalculator">SecantMethodCalculator</MenuItem>
+          <MenuItem value="CramerCalculator">CramerCalculator</MenuItem>
+          <MenuItem value="GaussEliminationCalculator">GaussEliminationCalculator</MenuItem>
+          <MenuItem value="GaussJordanCalculator">GaussJordanCalculator</MenuItem>
+          <MenuItem value="LUDecompositionCalculator">LUDecompositionCalculator</MenuItem>
+          <MenuItem value="CholeskyDecompositionCalculator">CholeskyDecompositionCalculator</MenuItem>
+          <MenuItem value="NewtonsDividedDifferencesCalculator">NewtonsDividedDifferencesCalculator</MenuItem>
+          <MenuItem value="LagrangeInterpolationCalculator">LAGRANGE INTERPOLATION</MenuItem>
+         
         </Select>
        
        

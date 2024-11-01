@@ -1,25 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Form, Table } from "react-bootstrap";
-import { evaluate } from 'mathjs';
+import { evaluate, parse, derivative } from 'mathjs';
 import ButtonFormat from "../ButtonForm/button_form";
 import TextForm from "../ButtonForm/text_form";
-import CustomLineChart from "../GrapForm/CustomLineChart"; // Ensure correct path
+import CustomLineChart from "../GrapForm/CustomLineChart"; 
 import styled from 'styled-components';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-
+import 'katex/dist/katex.min.css';
+import { BlockMath, InlineMath } from 'react-katex';
+import equations from './equations'; // นำเข้ารายการสมการ
 // Styled components
+const Inline_Math = styled.div`
+    font-size: 5vh; 
+    background-color: #f9f9f9; 
+    border-radius: 10px; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+    padding: 20px; 
+    height: 100%;
+`;
+
 const ColorIcon = {
     color: 'white',
     fontSize: 40 
 };
 
 const Restart = styled.button`
-  cursor: pointer;
-  background-color: ${({ isClicked }) => (isClicked ? '#C96868' : '#FF8A8A')};
-  border: none;
-  border-radius: 1.5vh;
-  height: 6vh;
-  width: 20%;
+    cursor: pointer;
+    background-color: ${({ $isClicked }) => ($isClicked ? '#C96868' : '#FF8A8A')};
+    border: none;
+    border-radius: 1.5vh;
+    height: 6vh;
+    width: 20%;
 `;
 
 const StyledTable = styled(Table)`
@@ -42,7 +53,8 @@ const FormCon = styled.div`
 
 const FormInput = styled.div`
     display: flex;
-    gap: 2vh; 
+    align-items: center;  
+    justify-content: center;  
 `;
 
 const FormButton = styled.div`
@@ -74,40 +86,58 @@ const ErrorText = styled.div`
 const NewtonRaphsonCalculator = () => {
     const [data, setData] = useState([]);
     const [X, setX] = useState(0);
-    const [Equation, setEquation] = useState("x^4 - 13"); // Updated function
-    const [Derivative, setDerivative] = useState("4*x^3"); // Updated derivative
-    const [X0, setX0] = useState(""); // Initial guess
+    const [Equation, setEquation] = useState("(x^4 - 13)"); // Input equation
+    const [latexEquation, setLatexEquation] = useState(""); 
+    const [X0, setX0] = useState(""); 
+    const [errorTolerance, setErrorTolerance] = useState(0.00001);
     const [errorMessage, setErrorMessage] = useState("");
     const [buttonClicked, setButtonClicked] = useState(false);
+    const [currentFormula, setCurrentFormula] = useState(""); // Store the formula for display
+    const [errors, setErrors] = useState([]);
+    // Convert equation to LaTeX format
+    const convertToLatex = (equation) => {
+        try {
+            const node = parse(equation);
+            return node.toTex();
+        } catch (error) {
+            return equation; 
+        }
+    };
+    const fetchRandomEquation = () => {
+        const randomIndex = Math.floor(Math.random() * equations.length);
+        setEquation(equations[randomIndex]);
+    };
+    // Update LaTeX equation when Equation changes
+    useEffect(() => {
+        setLatexEquation(convertToLatex(Equation));
+    }, [Equation]);
 
     const error = (xold, xnew) => Math.abs((xnew - xold) / xnew) * 100;
 
-    const calculateNewtonRaphson = (x0) => {
+    const calculateOnePointIteration = (x0) => {
         let xNew = x0;
         let ea = 100;
         let iter = 0;
         const MAX = 50;
-        const e = 0.00001;
+        const e = parseFloat(errorTolerance);
         const results = [];
+        const errorsList = [];
+        // Calculate the derivative of the equation
+        const derivativeEquation = derivative(Equation, 'x').toString();
 
         do {
-            const xOld = xNew;
-            const fOld = evaluate(Equation, { x: xOld });
-            const fPrimeOld = evaluate(Derivative, { x: xOld });
-
-            if (fPrimeOld === 0) {
-                setErrorMessage("Derivative is zero. No solution found.");
-                return;
-            }
-
-            xNew = xOld - fOld / fPrimeOld;
+            const xOld = xNew; 
+            xNew = evaluate(`x - (${Equation}) / (${derivativeEquation})`, { x: xOld });
             ea = error(xOld, xNew);
             iter++;
-            results.push({ iteration: iter, X: xNew });
+            results.push({ iteration: iter, X: xNew, Error: ea });
+          
         } while (ea > e && iter < MAX);
-
+    
         setX(xNew);
         setData(results);
+        setCurrentFormula(`X = ${xNew.toFixed(6)} - \\frac{${Equation}}{${derivativeEquation}}`);
+        setErrors(errorsList); // Store errors
         console.log(xNew);
         console.log(results);
     };
@@ -116,15 +146,17 @@ const NewtonRaphsonCalculator = () => {
 
     const calculateRoot = () => {
         setErrorMessage("");
-
         const x0num = parseFloat(X0);
 
         if (isNaN(x0num)) {
+            setErrorMessage("กรุณาใส่ค่า X0.");
+            return;
+        }
+        if (!isValidNumber(x0num)) {
             setErrorMessage("กรุณาใส่ตัวเลขที่ถูกต้องสำหรับ X0.");
             return;
         }
-
-        calculateNewtonRaphson(x0num);
+        calculateOnePointIteration(x0num);
     };
 
     const handleInputChange = (setter) => (event) => {
@@ -134,10 +166,12 @@ const NewtonRaphsonCalculator = () => {
     const resetFields = () => {
         setData([]);
         setX(0);
-        setEquation("x^4 - 13"); 
-        setDerivative("4*x^3"); 
+        setEquation("(x^4 - 13)"); 
+        setLatexEquation(convertToLatex("(x^4 - 13)")); 
         setX0("");
         setErrorMessage("");
+        setErrorTolerance(0.00001); 
+        setCurrentFormula(""); 
         setButtonClicked(true);
         setTimeout(() => setButtonClicked(false), 200);
     };
@@ -149,6 +183,7 @@ const NewtonRaphsonCalculator = () => {
                     <tr>
                         <th width="20%">Iteration</th>
                         <th width="80%">X</th>
+                        <th width="20%">Error(%)</th> 
                     </tr>
                 </thead>
                 <tbody>
@@ -156,6 +191,8 @@ const NewtonRaphsonCalculator = () => {
                         <TableRow key={index}>
                             <td>{element.iteration}</td>
                             <td>{element.X.toFixed(6)}</td>
+                            <td>{element.Error.toFixed(6)}%</td>
+                           
                         </TableRow>
                     ))}
                 </tbody>
@@ -168,15 +205,14 @@ const NewtonRaphsonCalculator = () => {
             <Form>
                 <Form.Group className="mb-3">
                     <FormCon>
+                        <Inline_Math>
+                            {/* แสดงสมการที่ได้จากการคำนวณ */}
+                            <InlineMath math={`x - \\frac{${Equation}}{${derivative(Equation, 'x')}}`} />
+                        </Inline_Math>
                         <TextForm
                             placeholderText="Input function (in terms of x)"
                             value={Equation}
                             onValueChange={handleInputChange(setEquation)}
-                        />
-                        <TextForm
-                            placeholderText="Input derivative (in terms of x)"
-                            value={Derivative}
-                            onValueChange={handleInputChange(setDerivative)}
                         />
                     </FormCon>
                     <FormInput>
@@ -188,18 +224,19 @@ const NewtonRaphsonCalculator = () => {
                     </FormInput>
                     <FormButton>
                         <ButtonFormat text='Calculate' onClick={calculateRoot} variant="dark" />
+                        <ButtonFormat text='Fetch Random Equation' onClick={fetchRandomEquation} variant="info" />
                         <Restart isClicked={buttonClicked} onClick={resetFields}>
                             <RestartAltIcon style={ColorIcon} />
                         </Restart>
                     </FormButton>
                     <FormAsn>
-                        Answer = {X.toFixed(6)}
+                        <BlockMath math={`X = ${X.toPrecision(7)}`} />
                     </FormAsn>
                     {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
                     <FormTable>
                         {renderTable()}
                     </FormTable>
-                    <CustomLineChart data={data.map(item => ({ iteration: item.iteration, X: item.X }))} />
+                    <CustomLineChart data={ data}/>
                 </Form.Group>
             </Form>
         </Container>

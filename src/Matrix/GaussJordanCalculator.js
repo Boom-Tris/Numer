@@ -1,12 +1,62 @@
 import React, { useState } from 'react';
-import { Container, Form, Button, Table } from 'react-bootstrap';
 import styled from 'styled-components';
 import { BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
+import ButtonFormatM from '../ButtonForm/button_M';
+// Styled Components
+const Container = styled.div`
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+`;
 
-const StyledTable = styled(Table)`
+const Form = styled.div`
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+`;
+
+const Label = styled.label`
+    margin-bottom: 10px;
+    font-size: 1.2em;
+`;
+
+const StyledTable = styled.table`
+    width: 100%;
+    border-collapse: collapse;
     text-align: center;
     margin-top: 20px;
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+`;
+
+const StyledButton = styled.button`
+    background-color: #3A6D8C;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+
+    &:hover {
+        background-color: white;
+        border: 1px solid #3A6D8C;
+        color: #3A6D8C;
+    }
+`;
+
+const Select = styled.select`
+    padding: 5px;
+    font-size: 1em;
+    margin-bottom: 20px;
 `;
 
 const ErrorText = styled.div`
@@ -15,6 +65,11 @@ const ErrorText = styled.div`
     margin-top: 10px;
 `;
 
+const StepContainer = styled.div`
+    margin-top: 20px;
+`;
+
+// Gauss-Jordan Calculator Component
 const GaussJordanCalculator = () => {
     const [size, setSize] = useState(2);
     const [matrix, setMatrix] = useState(Array(size).fill().map(() => Array(size + 1).fill('')));
@@ -77,35 +132,41 @@ const GaussJordanCalculator = () => {
         setSteps([]); // Reset steps when size changes
     };
 
+    const randomizeMatrix = () => {
+        const newMatrix = Array(size).fill().map(() => 
+            Array(size + 1).fill().map(() => Math.floor(Math.random() * 10) + 1) // Random values between 1 and 10
+        );
+        setMatrix(newMatrix);
+    };
+
     return (
         <Container>
             <h2>Gauss-Jordan Elimination Calculator</h2>
             <Form>
-                <Form.Group controlId="formMatrixSize">
-                    <Form.Label>Matrix Size (Number of Equations)</Form.Label>
-                    <Form.Control as="select" value={size} onChange={handleSizeChange}>
-                        {[...Array(10).keys()].map(i => (
-                            <option key={i + 1} value={i + 1}>{i + 1}</option>
-                        ))}
-                    </Form.Control>
-                </Form.Group>
+                <Label>Matrix Size (Number of Equations)</Label>
+                <Select value={size} onChange={handleSizeChange}>
+                    {[...Array(10).keys()].map(i => (
+                        <option key={i + 1} value={i + 1}>{i + 1}</option>
+                    ))}
+                </Select>
 
-                <StyledTable striped bordered>
+                <StyledTable>
                     <thead>
                         <tr>
-                            <th>Row / Column</th>
-                            {[...Array(size + 1).keys()].map(colIndex => (
-                                <th key={colIndex}>A[{0}][{colIndex}]</th>
+                            <th>Equation / Variables</th>
+                            {Array.from({ length: size }).map((_, colIndex) => (
+                                <th key={colIndex}>{`X${colIndex + 1}`}</th>
                             ))}
+                            <th>Constants</th>
                         </tr>
                     </thead>
                     <tbody>
                         {Array.from({ length: size }).map((_, rowIndex) => (
                             <tr key={rowIndex}>
                                 <td>{`Equation ${rowIndex + 1}`}</td>
-                                {Array.from({ length: size + 1 }).map((_, colIndex) => (
+                                {Array.from({ length: size }).map((_, colIndex) => (
                                     <td key={colIndex}>
-                                        <Form.Control
+                                        <input
                                             type="number"
                                             placeholder={`A[${rowIndex}][${colIndex}]`}
                                             value={matrix[rowIndex][colIndex]}
@@ -114,20 +175,29 @@ const GaussJordanCalculator = () => {
                                         />
                                     </td>
                                 ))}
+                                <td>
+                                    <input
+                                        type="number"
+                                        placeholder={`B[${rowIndex}]`}
+                                        value={matrix[rowIndex][size]}
+                                        onChange={handleMatrixChange(rowIndex, size)}
+                                        style={{ width: '80px' }}
+                                    />
+                                </td>
                             </tr>
                         ))}
                     </tbody>
                 </StyledTable>
 
-                <Button variant="primary" onClick={calculateGaussJordan}>
-                    Calculate
-                </Button>
+                <ButtonFormatM text='Generate' onClick={randomizeMatrix} />
+                <ButtonFormatM text='Calculate' onClick={calculateGaussJordan} />
+              
             </Form>
 
             {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
 
             {results.length > 0 && (
-                <StyledTable striped bordered hover>
+                <StyledTable>
                     <thead>
                         <tr>
                             <th>Variable</th>
@@ -146,12 +216,12 @@ const GaussJordanCalculator = () => {
             )}
 
             {steps.length > 0 && (
-                <div style={{ marginTop: '20px' }}>
+                <StepContainer>
                     <h4>Calculation Steps:</h4>
                     {steps.map((step, index) => (
                         <BlockMath key={index} math={step} />
                     ))}
-                </div>
+                </StepContainer>
             )}
         </Container>
     );

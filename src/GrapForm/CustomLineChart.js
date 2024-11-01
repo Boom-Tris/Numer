@@ -30,12 +30,12 @@ const CustomLineChart = ({ data = [] }) => {
                     <XAxis dataKey="iteration" label={{ value: 'Iteration', position: 'insideBottomRight', offset: -10 }}/>
                     
                     <YAxis 
-                        domain={['dataMin - 0.5', 'dataMax + 0.5']} 
+                        domain={['dataMin - 5', 'dataMax + 5']} 
                         tickFormatter={formatDecimal}
                         label={{ value: 'X', position: 'insideTop', offset: -25 }}
                     />
                     <YAxis 
-        yAxisId="right" // ID  Error
+        yAxisId="left" // ID  Error
         orientation="right" // แสดง YAxis ทางด้านขวา
         domain={['dataMin - 5', 'dataMax + 5']} 
         tickFormatter={formatDecimal}
@@ -62,7 +62,7 @@ const CustomLineChart = ({ data = [] }) => {
         legendType="none"  
         dot={{ stroke: '#82ca9d', strokeWidth: 2, r: 6 }}
         activeDot={{ r: 8 }}
-        yAxisId="right" // Error
+        yAxisId="left" // Error
     />
                 </LineChart>
             </ResponsiveContainer>

@@ -51,7 +51,7 @@ const MultipleSelect = () => {
           onChange={handleChange}
         >
           
-          <MenuItem value="GraphicalCalculator">Graphical กำลังแก้</MenuItem>
+          <MenuItem value="GraphicalCalculator">Graphical</MenuItem>
           <MenuItem value="BisectionCalculator">Bisection</MenuItem>
           <MenuItem value="FalsePositionCalculator">False Position</MenuItem>
           <MenuItem value="OnePointIterationCalculator">One Point Iteration</MenuItem>

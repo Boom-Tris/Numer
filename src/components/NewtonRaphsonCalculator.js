@@ -203,6 +203,7 @@ const NewtonRaphsonCalculator = () => {
     return (
         <Container>
             <Form>
+            <h1 style={{ marginLeft: '15vh' }}>NewtonRaphsonCalculator</h1>
                 <Form.Group className="mb-3">
                     <FormCon>
                         <Inline_Math>

@@ -216,6 +216,7 @@ const BisectionCalculator = () => {
     return (
         <Container>
             <Form>
+            <h1 style={{ marginLeft: '15vh' }}>BisectionCalculator</h1>
                 <Form.Group className="mb-3">
                 <FormAsn>
                     <Inline_Math>

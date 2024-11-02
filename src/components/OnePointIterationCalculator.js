@@ -190,6 +190,7 @@ const OnePointIterationCalculator = () => {
 
     const renderTable = () => (
         <Container>
+             
             <StyledTable striped bordered hover variant="dark">
                 <thead>
                     <tr>
@@ -214,6 +215,7 @@ const OnePointIterationCalculator = () => {
     return (
         <Container>
             <Form>
+            <h1 style={{ marginLeft: '15vh' }}>OnePointIterationCalculator</h1>
                 <Form.Group className="mb-3">
                     <FormContainer>
                         <Inline_Math>

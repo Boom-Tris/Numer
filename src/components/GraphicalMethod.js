@@ -175,7 +175,10 @@ const GraphicalCalculator = () => {
     return (
         <Container>
             <Form>
+           
+            <h1 style={{ marginLeft: '15vh' }}>GraphicalCalculator</h1>
                 <Form.Group className="mb-3">
+                  
                     <FormAsn>
                         <Inline_Math>
                             <InlineMath math={latexEquation} />

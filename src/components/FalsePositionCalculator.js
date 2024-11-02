@@ -231,6 +231,7 @@ const FalsePositionCalculator = () => {
     return (
         <Container>
             <Form>
+            <h1 style={{ marginLeft: '15vh' }}>False PositionCalculator</h1>
                 <Form.Group className="mb-3">
                 <FormAsn>
                     <Inline_Math>

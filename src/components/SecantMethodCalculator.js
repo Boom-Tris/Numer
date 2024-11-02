@@ -211,6 +211,7 @@ const SecantMethodCalculator = () => {
   return (
     <Container>
       <Form>
+      <h1 style={{ marginLeft: '15vh' }}>SecantMethodCalculator</h1>
         <Form.Group className="mb-3">
           <FormAsn>
             <Inline_Math>
@@ -243,7 +244,7 @@ const SecantMethodCalculator = () => {
           </FormInput>
           <FormButton>
             <ButtonFormat text='Calculate' onClick={calculateRoot} variant="dark" />
-            <ButtonFormat text='Fetch Random Equation' onClick={fetchRandomEquation} variant="info" />ห
+            <ButtonFormat text='Fetch Random Equation' onClick={fetchRandomEquation} variant="info" />
             <Restart $isClicked={buttonClicked} onClick={resetFields}>
               <RestartAltIcon style={ColorIcon} />
             </Restart>
